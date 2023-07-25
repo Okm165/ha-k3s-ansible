@@ -1,0 +1,121 @@
+- name: Install Kubernetes requirements
+  hosts: all
+  become: true
+
+  vars:
+    packages:
+      - cri-o
+      - kubelet
+      - kubeadm
+      - kubectl
+      - helm
+
+  tasks:
+    - name: Put SELinux in permissive mode, logging actions that would be blocked
+      ansible.posix.selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Add kubernetes repository
+      ansible.builtin.yum_repository:
+        file: kubernetes
+        name: kubernetes
+        description: Kubernetes
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        exclude: [kubelet, kubeadm, kubectl]
+
+    - name: Load overlay kernel module
+      community.general.modprobe:
+        name: overlay
+        state: present
+        persistent: present
+
+    - name: Load br_netfilter kernel module
+      community.general.modprobe:
+        name: br_netfilter
+        state: present
+        persistent: present
+
+    - name: Load nf_nat kernel module
+      community.general.modprobe:
+        name: nf_nat
+        state: present
+        persistent: present
+
+    - name: Load xt_REDIRECT kernel module
+      community.general.modprobe:
+        name: xt_REDIRECT
+        state: present
+        persistent: present
+
+    - name: Load xt_owner kernel module
+      community.general.modprobe:
+        name: xt_owner
+        state: present
+        persistent: present
+
+    - name: Load iptable_nat kernel module
+      community.general.modprobe:
+        name: iptable_nat
+        state: present
+        persistent: present
+
+    - name: Load iptable_mangle kernel module
+      community.general.modprobe:
+        name: iptable_mangle
+        state: present
+        persistent: present
+
+    - name: Load iptable_filter kernel module
+      community.general.modprobe:
+        name: iptable_filter
+        state: present
+        persistent: present
+
+    - name: Set net.bridge.bridge-nf-call-iptables sysctl config
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: "1"
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Set net.bridge.bridge-nf-call-ip6tables sysctl config
+      ansible.posix.sysctl:
+        name: net.bridge.bridge-nf-call-ip6tables
+        value: "1"
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Set net.ipv4.ip_forward sysctl config
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: "1"
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Install packages
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: latest
+        disable_excludes: kubernetes
+
+    - name: Enable & Start crio
+      ansible.builtin.systemd:
+        name: crio
+        state: started
+        enabled: true
+
+    - name: Enable & Start kubelet
+      ansible.builtin.systemd:
+        name: kubelet
+        state: started
+        enabled: true
+
+    - name: reboot
+      ansible.builtin.reboot:

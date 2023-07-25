@@ -1,0 +1,5 @@
+---
+  - include_tasks: requirements.yaml
+
+  - name: reboot
+    ansible.builtin.reboot:
