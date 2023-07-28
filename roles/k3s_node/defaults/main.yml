@@ -4,6 +4,6 @@ group_name_master: master
 
 # yamllint disable rule:line-length
 agent_init_args: >-
-  --server https://{{ master_ip }}:6443
+  --server https://{{ apiserver_endpoint }}:6443
   --token {{ hostvars[groups[group_name_master | default('master')][0]]['token'] | default(k3s_token) }}
   {{ extra_agent_args | default('') }}
