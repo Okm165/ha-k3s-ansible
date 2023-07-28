@@ -1,8 +1,17 @@
-- name: Create manifests directory on first master
-  file:
-    path: /var/lib/rancher/k3s/server/manifests
-    state: directory
-    owner: root
-    group: root
-    mode: 0644
+- name: Add traefik chart repo
+  kubernetes.core.helm_repository:
+    name: traefik
+    repo_url: "https://traefik.github.io/charts"
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Deploy traefik chart
+  kubernetes.core.helm:
+    name: traefik
+    chart_ref: traefik/traefik
+    release_namespace: kube-system
+    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
+    force: true
+    values:
+      deployment:
+        kind: DaemonSet
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']

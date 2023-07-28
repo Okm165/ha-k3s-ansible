@@ -26,7 +26,8 @@ k3s_token: "some-SUPER-DEDEUPER-secret-password"
 k3s_master_taint: "{{ true if groups['node'] | default([]) | length >= 1 else false }}"
 
 # these arguments are recommended for servers as well as agents:
-# extra_args: >-
+extra_args: >-
+  --write-kubeconfig-mode="0644"
 #   --flannel-iface={{ flannel_iface }}
 #   --node-ip={{ k3s_node_ip }}
 
@@ -37,7 +38,6 @@ extra_server_args: >-
   --tls-san {{ apiserver_endpoint }}
   --disable servicelb
   --disable traefik
-  --no-deploy traefik
 extra_agent_args: >-
   {{ extra_args }}
 

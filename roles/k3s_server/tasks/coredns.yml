@@ -1,8 +1,16 @@
-- name: Create manifests directory on first master
-  file:
-    path: /var/lib/rancher/k3s/server/manifests
-    state: directory
-    owner: root
-    group: root
-    mode: 0644
+- name: Add coredns chart repo
+  kubernetes.core.helm_repository:
+    name: coredns
+    repo_url: "https://coredns.github.io/helm"
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Deploy coredns chart
+  kubernetes.core.helm:
+    name: coredns
+    chart_ref: coredns/coredns
+    release_namespace: kube-system
+    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
+    force: true
+    values:
+      replicaCount: 3
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
