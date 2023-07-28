@@ -1,8 +1,0 @@
-curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET K3S_KUBECONFIG_MODE="644" INSTALL_K3S_EXEC="--disable=traefik --disable=coredns" sh -s - server --cluster-init --tls-san 172.16.15.40
-<!-- kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml -->
-<!-- helm install traefik traefik/traefik -->
-helm --namespace=kube-system install traefik traefik/traefik --set deployment.kind=DaemonSet
-.coredns/deploy.sh | kubectl apply -f -
-kubectl delete --namespace=kube-system deployment kube-dns
-kubectl apply -f kube-vip.yaml
-kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/master/deploy/longhorn.yaml
