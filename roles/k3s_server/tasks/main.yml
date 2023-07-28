@@ -12,11 +12,14 @@
   failed_when: false
   changed_when: false
 
-- name: Deploy vip manifest
-  include_tasks: vip.yml
+- name: Deploy traefik manifest
+  include_tasks: traefik.yml
 
 - name: Deploy metallb manifest
   include_tasks: metallb.yml
+
+- name: Deploy vip manifest
+  include_tasks: vip.yml
 
 - name: Init cluster inside the transient k3s-init service
   command:
@@ -103,10 +106,10 @@
     owner: "{{ ansible_user }}"
     mode: "u=rw,g=,o="
 
-- name: Replace https://localhost:6443 by https://master-ip:6443
+- name: Replace https://localhost:6443 by https://apiserver_endpoint:6443
   command: >-
     k3s kubectl config set-cluster default
-      --server=https://{{ master_ip }}:6443
+      --server=https://{{ apiserver_endpoint }}:6443
       --kubeconfig ~{{ ansible_user }}/.kube/config
   changed_when: true
 
@@ -121,9 +124,3 @@
     src: /usr/local/bin/k3s
     dest: /usr/local/bin/crictl
     state: link
-
-- name: Deploy coredns chart
-  include_tasks: coredns.yml
-
-- name: Deploy traefik chart
-  include_tasks: traefik.yml

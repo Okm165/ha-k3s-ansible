@@ -1,17 +1,27 @@
-- name: Add traefik chart repo
-  kubernetes.core.helm_repository:
-    name: traefik
-    repo_url: "https://traefik.github.io/charts"
+---
+- name: Create manifests directory on first master
+  file:
+    path: /var/lib/rancher/k3s/server/manifests
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
 
-- name: Deploy traefik chart
-  kubernetes.core.helm:
-    name: traefik
-    chart_ref: traefik/traefik
-    release_namespace: kube-system
-    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
-    force: true
-    values:
-      deployment:
-        kind: DaemonSet
+- name: Download traefik rbac manifest to first master
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/traefik/traefik/v1.7/examples/k8s/traefik-rbac.yaml"
+    dest: "/var/lib/rancher/k3s/server/manifests/traefik-rbac.yaml"
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Copy traefik manifest to first master
+  template:
+    src: "traefik.yaml.j2"
+    dest: "/var/lib/rancher/k3s/server/manifests/traefik.yaml"
+    owner: root
+    group: root
+    mode: 0644
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
