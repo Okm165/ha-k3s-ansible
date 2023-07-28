@@ -17,10 +17,8 @@ apiserver_endpoint: "172.16.15.55"
 # this token should be alpha numeric only
 k3s_token: "some-SUPER-DEDEUPER-secret-password"
 
-# The IP on which the node is reachable in the cluster.
-# Here, a sensible default is provided, you can still override
-# it for each of your hosts, though.
-# k3s_node_ip: '{{ ansible_facts[flannel_iface]["ipv4"]["address"] }}'
+# Ip of server that initializes cluster
+master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
 
 # Disable the taint manually by setting: k3s_master_taint = false
 k3s_master_taint: "{{ true if groups['node'] | default([]) | length >= 1 else false }}"
@@ -28,6 +26,11 @@ k3s_master_taint: "{{ true if groups['node'] | default([]) | length >= 1 else fa
 # these arguments are recommended for servers as well as agents:
 extra_args: >-
   --write-kubeconfig-mode="0644"
+  --kubelet-arg node-status-update-frequency="2s"
+  --kube-apiserver-arg default-not-ready-toleration-seconds=4
+  --kube-apiserver-arg default-unreachable-toleration-seconds=4
+  --kube-controller-manager-arg node-monitor-period="4s"
+  --kube-controller-manager-arg node-monitor-grace-period="20s"
 #   --flannel-iface={{ flannel_iface }}
 #   --node-ip={{ k3s_node_ip }}
 

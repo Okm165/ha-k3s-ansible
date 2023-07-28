@@ -4,8 +4,11 @@
 # will determine the right interface automatically at runtime.
 kube_vip_iface: null
 
+k3s_server_location: /var/lib/rancher/k3s
+
 # Name of the master group
 group_name_master: master
+
 # --server https://{{ hostvars[groups[group_name_master | default('master')][0]].k3s_node_ip | split(",") | first | ansible.utils.ipwrap }}:6443
 # yamllint disable rule:line-length
 server_init_args: >-
@@ -13,7 +16,7 @@ server_init_args: >-
     {% if ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname'] %}
       --cluster-init
     {% else %}
-      --server https://172.16.15.31:6443
+      --server https://{{ master_ip }}:6443
     {% endif %}
     --token {{ k3s_token }}
   {% endif %}
