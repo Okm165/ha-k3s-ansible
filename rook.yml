@@ -1,7 +1,7 @@
 ---
-- name: Update nodes
+- name: Install rook ceph
   hosts: master
   gather_facts: yes
   roles:
-    - role: longhorn
+    - role: rook
       become: true
