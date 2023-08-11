@@ -1,0 +1,12 @@
+---
+- name: Update dnf
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Update apt
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+  when: ansible_os_family == "Debian"

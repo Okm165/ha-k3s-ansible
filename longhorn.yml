@@ -1,0 +1,7 @@
+---
+- name: Update nodes
+  hosts: master
+  gather_facts: yes
+  roles:
+    - role: longhorn
+      become: true

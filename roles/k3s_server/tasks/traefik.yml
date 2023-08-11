@@ -1,10 +1,10 @@
-- name: Add traefik chart repo
+- name: Add traefik helm chart repo
   kubernetes.core.helm_repository:
     name: traefik
     repo_url: "https://traefik.github.io/charts"
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
 
-- name: Deploy traefik chart
+- name: Deploy traefik helm chart
   kubernetes.core.helm:
     name: traefik
     chart_ref: traefik/traefik

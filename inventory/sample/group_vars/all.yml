@@ -11,14 +11,11 @@ systemd_dir: /etc/systemd/system
 # flannel_iface: "eth0"
 
 # apiserver_endpoint is virtual ip-address which will be configured on each master kube-vip
-apiserver_endpoint: "172.16.15.55"
+apiserver_endpoint: "10.4.4.150"
 
 # k3s_token is required  masters can talk together securely
 # this token should be alpha numeric only
 k3s_token: "b9859725-0c92-47c1-b75d-868f5d4d348c"
-
-# Ip of server that initializes cluster
-master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
 
 # Disable the taint manually by setting: k3s_master_taint = false
 # k3s_master_taint: "{{ true if groups['node'] | default([]) | length >= 1 else false }}"
@@ -33,7 +30,7 @@ extra_args: >-
 # {{ '--node-taint node-role.kubernetes.io/master=true:NoSchedule' if k3s_master_taint else '' }}
 extra_server_args: >-
   {{ extra_args }}
-  --write-kubeconfig-mode 644
+  --write-kubeconfig-mode="0644"
   --kube-apiserver-arg default-not-ready-toleration-seconds=4
   --kube-apiserver-arg default-unreachable-toleration-seconds=4
   --kube-controller-manager-arg node-monitor-grace-period="20s"
@@ -63,4 +60,4 @@ metal_lb_speaker_tag_version: "v0.13.10"
 metal_lb_controller_tag_version: "v0.13.10"
 
 # metallb ip range for load balancer
-metal_lb_ip_range: "172.16.15.40-172.16.15.50"
+metal_lb_ip_range: "10.4.4.110-10.4.4.149"

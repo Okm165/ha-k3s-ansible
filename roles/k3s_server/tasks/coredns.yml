@@ -1,10 +1,10 @@
-- name: Add coredns chart repo
+- name: Add coredns helm chart repo
   kubernetes.core.helm_repository:
     name: coredns
     repo_url: "https://coredns.github.io/helm"
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
 
-- name: Deploy coredns chart
+- name: Deploy coredns helm chart
   kubernetes.core.helm:
     name: coredns
     chart_ref: coredns/coredns
