@@ -15,7 +15,7 @@
     release_namespace: rook-ceph
     kubeconfig: "{{ ansible_user_dir }}/.kube/config"
     force: true
-    values: "{{ lookup('template', 'rook-ceph-overrides.yml') | from_yaml }}"
+    # values: "{{ lookup('template', 'rook-ceph-overrides.yml') | from_yaml }}"
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
 
 - name: Deploy rook-cluster helm chart
@@ -25,5 +25,5 @@
     release_namespace: rook-ceph
     kubeconfig: "{{ ansible_user_dir }}/.kube/config"
     force: true
-    values: "{{ lookup('template', 'rook-ceph-cluster-overrides.yml') | from_yaml }}"
+    # values: "{{ lookup('template', 'rook-ceph-cluster-overrides.yml') | from_yaml }}"
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
