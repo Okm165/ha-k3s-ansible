@@ -63,15 +63,3 @@
     path: /etc/sudoers
     validate: 'visudo -cf %s'
   when: ansible_os_family == "RedHat"
-
-- name: Install the latest version of helm
-  ansible.builtin.dnf:
-    name: helm
-    state: latest
-  when: ansible_os_family == "RedHat"
-
-- name: Install the latest version of helm
-  ansible.builtin.apt:
-    name: helm
-    state: latest
-  when: ansible_os_family == "Ubuntu"

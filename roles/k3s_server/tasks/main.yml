@@ -1,5 +1,4 @@
 ---
-
 - name: Stop k3s-init
   systemd:
     name: k3s-init
@@ -121,6 +120,18 @@
     src: /usr/local/bin/k3s
     dest: /usr/local/bin/crictl
     state: link
+
+- name: Install the latest version of helm
+  ansible.builtin.dnf:
+    name: helm
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install the latest version of helm
+  ansible.builtin.apt:
+    name: helm
+    state: latest
+  when: ansible_os_family == "Ubuntu"
 
 - name: Deploy coredns chart
   include_tasks: coredns.yml
