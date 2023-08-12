@@ -1,3 +1,7 @@
+- name: Creating namespace
+  ansible.builtin.shell: kubectl create namespace rook-ceph --dry-run=client -o yaml | kubectl apply -f -
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
 - name: Add rook chart repo
   kubernetes.core.helm_repository:
     name: rook-release
@@ -11,4 +15,15 @@
     release_namespace: rook-ceph
     kubeconfig: "{{ ansible_user_dir }}/.kube/config"
     force: true
+    values: "{{ lookup('template', 'rook-ceph-overrides.yaml') | from_yaml }}"
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Deploy rook-cluster helm chart
+  kubernetes.core.helm:
+    name: rook-ceph-cluster
+    chart_ref: rook-release/rook-ceph-cluster
+    release_namespace: rook-ceph
+    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
+    force: true
+    values: "{{ lookup('template', 'rook-ceph-cluster-overrides.yaml') | from_yaml }}"
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
