@@ -445,7 +445,7 @@ cephECBlockPools:
       erasureCoded:
         dataChunks: 2
         codingChunks: 1
-      deviceClass: hdd
+      deviceClass: ssd
 
 # cephECStorageClass also is disabled by default, please remove the comments and set desired values to enable it
 # if cephECBlockPools are uncommented you must remove the comments of cephEcStorageClass as well
