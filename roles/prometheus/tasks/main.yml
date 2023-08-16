@@ -15,5 +15,5 @@
     release_namespace: kube-prometheus
     kubeconfig: "{{ ansible_user_dir }}/.kube/config"
     force: true
-    # values: "{{ lookup('template', 'overrides.yml') | from_yaml }}"
+    values: "{{ lookup('template', 'overrides.yaml') | from_yaml }}"
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']

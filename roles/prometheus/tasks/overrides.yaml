@@ -1,0 +1,15 @@
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: rook-ceph-ec-block
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 100Gi
+  service:
+    type: LoadBalancer
+grafana:
+  ingress:
+    enabled: true

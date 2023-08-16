@@ -452,7 +452,7 @@ cephECBlockPools:
       deviceClass: ssd
 
 cephECStorageClass:
-  name: rook-ceph-block
+  name: rook-ceph-ec-block
   # Change "rook-ceph" provisioner prefix to match the operator namespace if needed
   provisioner: rook-ceph.rbd.csi.ceph.com # driver:namespace:operator
   parameters:
