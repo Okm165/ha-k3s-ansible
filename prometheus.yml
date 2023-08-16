@@ -1,0 +1,7 @@
+---
+- name: Install prometheus
+  hosts: master
+  gather_facts: yes
+  roles:
+    - role: prometheus
+      become: true

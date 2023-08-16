@@ -5,13 +5,6 @@
 # -- Namespace of the main rook operator
 operatorNamespace: rook-ceph
 
-# -- The metadata.name of the CephCluster CR
-# @default -- The same as the namespace
-clusterName:
-
-# -- Optional override of the target kubernetes version
-kubeVersion:
-
 # -- Cluster ceph.conf override
 configOverride:
 # configOverride: |
@@ -23,7 +16,7 @@ configOverride:
 # Installs a debugging toolbox deployment
 toolbox:
   # -- Enable Ceph debugging pod deployment. See [toolbox](../Troubleshooting/ceph-toolbox.md)
-  enabled: false
+  enabled: true
   # -- Toolbox image, defaults to the image used by the Ceph cluster
   image: #quay.io/ceph/ceph:v17.2.6
   # -- Toolbox tolerations
@@ -184,15 +177,15 @@ cephClusterSpec:
 
   # enable the crash collector for ceph daemon crash collection
   crashCollector:
-    disable: false
+    disable: true
     # Uncomment daysToRetain to prune ceph crash entries older than the
     # specified number of days.
-    # daysToRetain: 30
+    daysToRetain: 30
 
   # enable log collector, daemons will log on files and rotate
   logCollector:
     enabled: true
-    periodicity: daily # one of: hourly, daily, weekly, monthly
+    periodicity: hourly # one of: hourly, daily, weekly, monthly
     maxLogSize: 500M # SUFFIX may be 'M' or 'G'. Must be at least 1M.
 
   # automate [data cleanup process](https://github.com/rook/rook/blob/master/Documentation/ceph-teardown.md#delete-the-data-on-hosts) in cluster destruction.
@@ -392,13 +385,13 @@ cephClusterSpec:
     daemonHealth:
       mon:
         disabled: false
-        interval: 45s
+        interval: 5s
       osd:
         disabled: false
-        interval: 60s
+        interval: 5s
       status:
         disabled: false
-        interval: 60s
+        interval: 5s
     # Change pod liveness probe, it works for all mon, mgr, and osd pods.
     livenessProbe:
       mon:
@@ -430,7 +423,18 @@ ingress:
     ## to set the ingress class
     # ingressClassName: nginx
 
-# cephECBlockPools are disabled by default, please remove the comments and set desired values to enable it
+# -- A list of CephBlockPool configurations to deploy
+# @default -- See [below](#ceph-block-pools)
+cephBlockPools: {}
+
+# -- A list of CephFileSystem configurations to deploy
+# @default -- See [below](#ceph-file-systems)
+cephFileSystems: {}
+
+# -- A list of CephObjectStore configurations to deploy
+# @default -- See [below](#ceph-object-stores)
+cephObjectStores: {}
+
 cephECBlockPools:
   # For erasure coded a replicated metadata pool is required.
   # https://rook.io/docs/rook/latest/CRDs/Shared-Filesystem/ceph-filesystem-crd/#erasure-coded
@@ -447,8 +451,6 @@ cephECBlockPools:
         codingChunks: 1
       deviceClass: ssd
 
-# cephECStorageClass also is disabled by default, please remove the comments and set desired values to enable it
-# if cephECBlockPools are uncommented you must remove the comments of cephEcStorageClass as well
 cephECStorageClass:
   name: rook-ceph-block
   # Change "rook-ceph" provisioner prefix to match the operator namespace if needed
