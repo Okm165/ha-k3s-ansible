@@ -1,4 +1,3 @@
----
 - name: Set same timezone on every Server
   community.general.timezone:
     name: "{{ system_timezone }}"
@@ -63,3 +62,35 @@
     path: /etc/sudoers
     validate: 'visudo -cf %s'
   when: ansible_os_family == "RedHat"
+
+- name: Ensure Python3 is installed (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: python3
+    state: latest
+  when: ansible_os_family == "Ubuntu"
+
+- name: Ensure Python3 is installed (RedHat/CentOS)
+  ansible.builtin.dnf:
+    name: python3
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure pip3 is installed (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: python3-pip
+    state: latest
+  when: ansible_os_family == "Ubuntu"
+
+- name: Ensure pip3 is installed (RedHat/CentOS)
+  ansible.builtin.dnf:
+    name: python3-pip
+    state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure required Python libraries are installed
+  ansible.builtin.pip:
+    name:
+      - kubernetes>=12.0.0
+      - PyYAML>=3.11
+      - jsonpatch
+    executable: pip3

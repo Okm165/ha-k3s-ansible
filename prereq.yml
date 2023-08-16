@@ -1,0 +1,7 @@
+---
+- name: Install prereq
+  hosts: master
+  gather_facts: yes
+  roles:
+    - role: prereq
+      become: true

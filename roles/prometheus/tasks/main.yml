@@ -1,14 +1,42 @@
-- name: Creating namespace
-  ansible.builtin.shell: kubectl create namespace kube-prometheus --dry-run=client -o yaml | kubectl apply -f -
+- name: Create Namespace
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: kube-prometheus
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
 
-- name: Add rook chart repo
+- name: Create Service
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: grafana-loadbalancer
+        namespace: kube-prometheus
+      spec:
+        type: LoadBalancer
+        ports:
+          - name: tcp
+            port: 80
+            targetPort: 3000
+        selector:
+          app.kubernetes.io/instance: "kube-prometheus-stack"
+          app.kubernetes.io/name: "grafana"
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Add prometheus chart repo
   kubernetes.core.helm_repository:
     name: prometheus-community
     repo_url: "https://prometheus-community.github.io/helm-charts"
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
 
-- name: Deploy rook helm chart
+- name: Deploy prometheus helm chart
   kubernetes.core.helm:
     name: kube-prometheus-stack
     chart_ref: prometheus-community/kube-prometheus-stack

@@ -1,3 +1,5 @@
+# kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash
+
 - name: Creating namespace
   ansible.builtin.shell: kubectl create namespace rook-ceph --dry-run=client -o yaml | kubectl apply -f -
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
