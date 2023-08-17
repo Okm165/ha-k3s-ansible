@@ -29,3 +29,33 @@
     force: true
     values: "{{ lookup('template', 'rook-ceph-cluster-overrides.yml') | from_yaml }}"
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Create Service
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: rook-ceph-mgr-dashboard-loadbalancer
+        namespace: rook-ceph # namespace:cluster
+        labels:
+          app: rook-ceph-mgr
+          rook_cluster: rook-ceph # namespace:cluster
+      spec:
+        ports:
+        - name: dashboard
+          port: 80
+          protocol: TCP
+          targetPort: 7000
+        selector:
+          app: rook-ceph-mgr
+          mgr_role: active
+          rook_cluster: rook-ceph
+        sessionAffinity: None
+        type: LoadBalancer
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+
+  
