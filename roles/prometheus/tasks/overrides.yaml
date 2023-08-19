@@ -7,5 +7,5 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 100Gi
+              storage: 20Gi
     scrapeInterval: "5s"

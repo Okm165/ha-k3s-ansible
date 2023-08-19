@@ -1,0 +1,26 @@
+- name: Create Namespace
+  kubernetes.core.k8s:
+    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: cert-manager
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Add cert-manager chart repo
+  kubernetes.core.helm_repository:
+    name: jetstack
+    repo_url: "https://charts.jetstack.io"
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
+- name: Deploy cert-manager helm chart
+  kubernetes.core.helm:
+    name: cert-manager
+    chart_ref: jetstack/cert-manager
+    release_namespace: cert-manager
+    kubeconfig: "{{ ansible_user_dir }}/.kube/config"
+    force: true
+    # values: "{{ lookup('template', 'overrides.yaml') | from_yaml }}"
+  when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']

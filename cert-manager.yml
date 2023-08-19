@@ -1,0 +1,7 @@
+---
+- name: Install cert-manager
+  hosts: master
+  gather_facts: yes
+  roles:
+    - role: cert-manager
+      become: true

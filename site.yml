@@ -3,6 +3,8 @@
   hosts: k3s_cluster
   gather_facts: yes
   roles:
+    - role: update
+      become: true
     - role: prereq
       become: true
     - role: install
@@ -16,6 +18,10 @@
     - role: k3s_server_post
       become: true
     - role: rook
+      become: true
+    - role: prometheus
+      become: true
+    - role: cert-manager
       become: true
 
 - name: Setup k3s nodes
